@@ -1,4 +1,5 @@
-import mongoose, { model, Schema } from "mongoose";
+import { Schema } from "mongoose";
+import { mongooseObj } from "./connectDB.js";
 
 const User = new Schema({
     username: {
@@ -11,4 +12,4 @@ const User = new Schema({
     }
 });
 
-export const user = mongoose.model('User', User);
+export const user = mongooseObj.model('User', User);
