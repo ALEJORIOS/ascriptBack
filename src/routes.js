@@ -27,8 +27,15 @@ export function routes(app) {
 
     app.post('/new', cors(CORS_OPTIONS), (req, res) => {
         let newUser = new Users();
-        newUser.createUser();
+        newUser.createUser(req.body);
         res.send("User created successful");
     })
+
+    app.post('/login', cors(CORS_OPTIONS), (req, res) => {
+        let login = new Users();
+        login.login(req.body);
+        res.send("Login successful");
+    })
+
     return app;
 }

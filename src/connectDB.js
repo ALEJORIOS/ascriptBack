@@ -1,9 +1,8 @@
 import mongoose from "mongoose";
+import * as dotenv from 'dotenv';
 
-export async function connect() {
-    await mongoose.connect(process.env.MONGODB_URI)
-        .then(res => console.log("Connected to MongoDB Atlas"))
-        .catch(err => console.error(err))
+export default function connectDB() {
+    dotenv.config();
+    const conn = mongoose.createConnection(process.env.MONGODB_URI).useDb('Ascript');
+    return conn;
 }
-
-export let mongooseObj = mongoose;
