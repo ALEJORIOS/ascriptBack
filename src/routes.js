@@ -27,14 +27,21 @@ export function routes(app) {
 
     app.post('/new', cors(CORS_OPTIONS), (req, res) => {
         let newUser = new Users();
-        newUser.createUser(req.body);
-        res.send("User created successful");
+        newUser.createUser(req.body)
+        .then(response => res.json(response));
+        
     })
 
     app.post('/login', cors(CORS_OPTIONS), (req, res) => {
-        let login = new Users();
-        login.login(req.body);
-        res.send("Login successful");
+        let usersFunctions = new Users();
+        usersFunctions.checkForExistence(req.body.username, req.body.email).then(match => res.json(match));
+    })
+
+    app.post('/prueba', cors(CORS_OPTIONS), async (req, res) => {
+        let usersFunctions = new Users();
+        let response;
+        await usersFunctions.checkForExistence(req.body.username, req.body.email).then(exist => response = exist);
+        res.json(response);
     })
 
     return app;

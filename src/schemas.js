@@ -9,7 +9,11 @@ const User = new Schema({
     password: {
         type: String,
         required: true
+    },
+    email: {
+        type: String,
+        required: true
     }
 });
 
-export const user = connectDB().model('users', User, "Users");
+export const userModel = connectDB().model('users', User, "Users");
