@@ -3,8 +3,8 @@ import cors from 'cors';
 import * as dotenv from 'dotenv';
 import { Users } from "./functions/users.js";
 import express from 'express';
-import jwt from 'jsonwebtoken';
 import { GLOBAL } from "./global.js";
+import jwt from "jsonwebtoken";
 
 
 dotenv.config();
@@ -23,13 +23,13 @@ const CORS_OPTIONS = {
     }
 }
 
+const router = express.Router();
 
-
-export function routes(app) {
-    let verifyJWT = express.Router();
-
-    verifyJWT.use((req, res, next) => {
-        let token = req.headers['x-access-token'] || req.headers['authorization'];
+router.use((req, res, next) => {
+    let token = req.headers['x-access-token'] || req.headers['authorization'];
+    if(GLOBAL.ROUTES_WITHOUT_JWT.includes(req.path)){
+        next();
+    }else{
         if(!token) {
             res.status(401).send({
                 code: 4,
@@ -50,31 +50,36 @@ export function routes(app) {
                     next();
                 }
             })
-            console.log(token);
         }
-    })
-    app.use(bodyParser.json());
+    }
+})
 
-    app.get('/', cors(CORS_OPTIONS), (req, res) => {
-        res.send('Hola mundo!');
-    })
-
-    app.post('/new', cors(CORS_OPTIONS), async (req, res) => {
-        let newUser = new Users();
-        await newUser.createUser(req.body)
-        .then(response => res.json(response));
-        
-    })
-
-    app.post('/login', cors(CORS_OPTIONS), async (req, res) => {
-        let usersFunctions = new Users();
-        await usersFunctions.login(req.body)
-        .then(response => res.json(response));
-    })
-
-    app.post('/prueba', [cors(CORS_OPTIONS), verifyJWT], (req, res) => {
-        res.send("Probando");
-    })
-
+export function applyCORS(app){
+    app.use(cors(CORS_OPTIONS));
     return app;
 }
+
+router.use(bodyParser.json());
+
+router.get('/', cors(CORS_OPTIONS), (req, res) => {
+    res.send('Hola mundo!');
+})
+
+router.post('/register', cors(CORS_OPTIONS), async (req, res) => {
+    let newUser = new Users();
+    await newUser.createUser(req.body)
+    .then(response => res.json(response));
+    
+})
+
+router.post('/login', cors(CORS_OPTIONS), async (req, res) => {
+    let usersFunctions = new Users();
+    await usersFunctions.login(req.body)
+    .then(response => res.json(response));
+})
+
+router.post('/prueba', (req, res) => {
+    res.send("Probando");
+})
+
+export const Router = router;
